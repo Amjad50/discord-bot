@@ -23,7 +23,7 @@ class Game2048:
                 'rows': range(2, -1, -1),
                 'cols': range(4),
                 'check_func': lambda current_pos: current_pos < 12,
-                'increment_value': +4
+                'increment_val': +4
             },
             'right': {
                 'rows_first': False,
@@ -55,13 +55,16 @@ class Game2048:
 
     def add_new(self, times=1):
         free_places = [i for i in range(16) if self._board[i] == 0]
+        print("adding in: ", end='')  # debugging
         for _ in range(times):
             if len(free_places) != 0:
                 chosen = choice(free_places)
                 self._board[chosen] = 2
                 free_places.remove(chosen)
+                print(chosen, end=' ')  # debugging
             else:
                 raise RuntimeError("cannot add new_element because _board is full.")
+        print()  #debugging
 
     def move(self, direction):
         try:
@@ -95,13 +98,15 @@ class Game2048:
                         self._board[current_pos] = self._board[index]
                     self._board[index] = 0
 
-        if direction_config['row_first']:
+        if direction_config['rows_first']:
             for row in direction_config['rows']:
                 for col in direction_config['cols']:
                     index = (row * 4) + col
                     move_i()
         else:
             for col in direction_config['cols']:
-                for row in direction_config['row']:
+                for row in direction_config['rows']:
                     index = (row * 4) + col
                     move_i()
+
+        self.add_new()
