@@ -13,7 +13,7 @@ class Game2048:
         self.directions_config = {
             'up': {
                 'rows_first': True,
-                'rows': range(1, 3),
+                'rows': range(1, 4),
                 'cols': range(4),
                 'check_func': lambda current_pos: current_pos > 3,
                 'increment_val': -4
@@ -35,7 +35,7 @@ class Game2048:
             'left': {
                 'rows_first': False,
                 'rows': range(4),
-                'cols': range(1, 3),
+                'cols': range(1, 4),
                 'check_func': lambda current_pos: (current_pos % 4) != 0,
                 'increment_val': -1
             }
