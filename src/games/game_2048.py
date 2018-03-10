@@ -4,9 +4,13 @@ import asyncio
 
 class Game2048:
 
-    def __init__(self, bot, player):
+    def __init__(self, bot, player, channel):
         self._bot = bot
         self._player = player
+        self._channel = channel
+        self.score = 0
+        self.moves = 0
+        self.running = False
         self._board = [0] * 16
         self.score = 0
         self.__range4 = [0, 1, 2, 3]
@@ -110,3 +114,42 @@ class Game2048:
                     move_i()
 
         self.add_new()
+
+    @asyncio.coroutine
+    async def run(self):
+        emojis = ["⬆", "⬇", "➡", "⬅"]
+        self.message = await self._bot.send_message(self._channel, "starting game...")
+        self.running = True
+
+        while self.running:
+            await self._bot.edit_message(self.message, "score: {0}\nmoves: {1}\n{2}".format(
+                self.score, self.moves, self
+            ))
+
+            await self._bot.add_reaction(self.message, emoji="⬆")
+            await self._bot.add_reaction(self.message, emoji="⬇")
+            await self._bot.add_reaction(self.message, emoji="➡")
+            await self._bot.add_reaction(self.message, emoji="⬅")
+
+            respond = await self._bot.wait_for_reaction(message=self.message,
+                                                        check=lambda r,
+                                                                     u: u == self._player and r.emoji in emojis)
+            if self.running:
+                if respond.reaction.emoji == "⬆":
+                    self.move('up')
+                elif respond.reaction.emoji == "⬇":
+                    self.move('down')
+                elif respond.reaction.emoji == "➡":
+                    self.move('right')
+                elif respond.reaction.emoji == "⬅":
+                    self.move('left')
+                await self._bot.remove_reaction(self.message, respond.reaction.emoji, self._player)
+                self.moves += 1
+
+    @asyncio.coroutine
+    async def stop(self):
+        self.running = False
+        await self._bot.send_message(self._channel,
+                                     "game stopped with:\nscore: {0}\nmoves: {1}".format(
+                                         self.score, self.moves
+                                     ))
