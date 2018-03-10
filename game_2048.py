@@ -9,6 +9,7 @@ class Game2048:
         self._player = player
         self._board = [0] * 16
         self.score = 0
+        self.add_new(2)  # adding new element.
 
     def __repr__(self):
         result = '+' + '-' * 7 + '+\n'
@@ -21,9 +22,12 @@ class Game2048:
             result += ('\n+' + '-' * 7 + '+\n')
         return result
 
-    def add_new(self):
+    def add_new(self, times=1):
         free_places = [i for i in range(16) if self._board[i] == 0]
-        if len(free_places) != 0:
-            self._board[choice(free_places)] = 2
-        else:
-            raise RuntimeError("cannot add new_element because _board is full.")
+        for _ in range(times):
+            if len(free_places) != 0:
+                chosen = choice(free_places)
+                self._board[chosen] = 2
+                free_places.remove(chosen)
+            else:
+                raise RuntimeError("cannot add new_element because _board is full.")
